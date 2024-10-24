@@ -8,8 +8,9 @@ where
     T: Display + Send + Sync + 'static,
 {
     let reply = Arc::new(reply);
-    tokio::spawn(_fixed_reply(first, reply.clone()));
-    tokio::spawn(_fixed_reply(second, reply.clone()));
+    let first_handle = tokio::spawn(_fixed_reply(first, reply.clone()));
+    let second_handle = tokio::spawn(_fixed_reply(second, reply.clone()));
+    tokio::join!(first_handle, second_handle);
 }
 
 async fn _fixed_reply<T>(listener: TcpListener, reply: Arc<T>)
